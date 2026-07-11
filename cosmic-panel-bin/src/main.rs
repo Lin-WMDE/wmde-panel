@@ -84,7 +84,7 @@ fn main() -> Result<()> {
     log_panics::init();
 
     let arg = std::env::args().nth(1);
-    let usage = "USAGE: cosmic-panel";
+    let usage = "USAGE: wmde-panel";
     let config = match arg.as_ref().map(|s| &s[..]) {
         Some(arg) if arg == "--help" || arg == "-h" => {
             println!("{}", usage);
@@ -264,7 +264,7 @@ fn main() -> Result<()> {
                         };
                         let notif_fd = OwnedFd::from(notif_fd);
                         env.push((
-                            "COSMIC_NOTIFICATIONS".to_string(),
+                            "WMDE_NOTIFICATIONS".to_string(),
                             notif_fd.as_raw_fd().to_string(),
                         ));
                         fds.push(notif_fd);

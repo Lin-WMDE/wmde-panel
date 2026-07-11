@@ -1,5 +1,5 @@
-name := 'cosmic-panel'
-export APPID := 'com.system76.CosmicPanel'
+name := 'wmde-panel'
+export APPID := 'fun.wmde.Panel'
 rootdir := ''
 prefix := '/usr'
 
@@ -7,7 +7,7 @@ base-dir := absolute_path(clean(rootdir / prefix))
 
 export INSTALL_DIR := base-dir / 'share'
 
-default-schema-target := INSTALL_DIR / 'cosmic'
+default-schema-target := INSTALL_DIR / 'wmde'
 
 cargo-target-dir := env('CARGO_TARGET_DIR', 'target')
 bin-src := cargo-target-dir / 'release' / name

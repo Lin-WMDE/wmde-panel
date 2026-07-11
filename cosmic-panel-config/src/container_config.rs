@@ -39,7 +39,7 @@ impl WrapperConfig for CosmicPanelContainerConfig {
     }
 }
 
-pub const NAME: &str = "com.system76.CosmicPanel";
+pub const NAME: &str = "fun.wmde.Panel";
 pub const VERSION: u64 = 1;
 
 impl CosmicPanelContainerConfig {
@@ -144,23 +144,23 @@ impl Default for CosmicPanelContainerConfig {
                     background: CosmicPanelBackground::ThemeDefault,
                     plugins_wings: Some((
                         vec![
-                            "com.system76.CosmicPanelWorkspacesButton".to_string(),
-                            "com.system76.CosmicPanelAppButton".to_string(),
+                            "fun.wmde.PanelWorkspacesButton".to_string(),
+                            "fun.wmde.PanelAppButton".to_string(),
                         ],
                         vec![
-                            "com.system76.CosmicAppletInputSources".to_string(),
-                            "com.system76.CosmicAppletA11y".to_string(),
-                            "com.system76.CosmicAppletStatusArea".to_string(),
-                            "com.system76.CosmicAppletTiling".to_string(),
-                            "com.system76.CosmicAppletAudio".to_string(),
-                            "com.system76.CosmicAppletBluetooth".to_string(),
-                            "com.system76.CosmicAppletNetwork".to_string(),
-                            "com.system76.CosmicAppletBattery".to_string(),
-                            "com.system76.CosmicAppletNotifications".to_string(),
-                            "com.system76.CosmicAppletPower".to_string(),
+                            "fun.wmde.AppletInputSources".to_string(),
+                            "fun.wmde.AppletA11y".to_string(),
+                            "fun.wmde.AppletStatusArea".to_string(),
+                            "fun.wmde.AppletTiling".to_string(),
+                            "fun.wmde.AppletAudio".to_string(),
+                            "fun.wmde.AppletBluetooth".to_string(),
+                            "fun.wmde.AppletNetwork".to_string(),
+                            "fun.wmde.AppletBattery".to_string(),
+                            "fun.wmde.AppletNotifications".to_string(),
+                            "fun.wmde.AppletPower".to_string(),
                         ],
                     )),
-                    plugins_center: Some(vec!["com.system76.CosmicAppletTime".to_string()]),
+                    plugins_center: Some(vec!["fun.wmde.AppletTime".to_string()]),
                     size_wings: None,
                     size_center: None,
                     expand_to_edges: true,
@@ -186,11 +186,11 @@ impl Default for CosmicPanelContainerConfig {
                     background: CosmicPanelBackground::ThemeDefault,
                     plugins_wings: None,
                     plugins_center: Some(vec![
-                        "com.system76.CosmicPanelLauncherButton".to_string(),
-                        "com.system76.CosmicPanelWorkspacesButton".to_string(),
-                        "com.system76.CosmicPanelAppButton".to_string(),
-                        "com.system76.CosmicAppList".to_string(),
-                        "com.system76.CosmicAppletMinimize".to_string(),
+                        "fun.wmde.PanelLauncherButton".to_string(),
+                        "fun.wmde.PanelWorkspacesButton".to_string(),
+                        "fun.wmde.PanelAppButton".to_string(),
+                        "fun.wmde.AppList".to_string(),
+                        "fun.wmde.AppletMinimize".to_string(),
                     ]),
                     size_wings: None,
                     size_center: None,

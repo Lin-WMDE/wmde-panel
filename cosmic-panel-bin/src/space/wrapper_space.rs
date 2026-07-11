@@ -440,12 +440,12 @@ impl WrapperSpace for PanelSpace {
                 ron::ser::to_string(&self.config.padding_overlap()).unwrap_or_default();
             let config_name = self.config.name.clone();
             let env_vars = vec![
-                ("COSMIC_PANEL_NAME".to_string(), config_name),
-                ("COSMIC_PANEL_OUTPUT".to_string(), active_output),
-                ("COSMIC_PANEL_SPACING".to_string(), config_spacing),
-                ("COSMIC_PANEL_ANCHOR".to_string(), config_anchor),
-                ("COSMIC_PANEL_BACKGROUND".to_string(), config_bg),
-                ("COSMIC_PANEL_PADDING_OVERLAP".to_string(), config_padding_overlap),
+                ("WMDE_PANEL_NAME".to_string(), config_name),
+                ("WMDE_PANEL_OUTPUT".to_string(), active_output),
+                ("WMDE_PANEL_SPACING".to_string(), config_spacing),
+                ("WMDE_PANEL_ANCHOR".to_string(), config_anchor),
+                ("WMDE_PANEL_BACKGROUND".to_string(), config_bg),
+                ("WMDE_PANEL_PADDING_OVERLAP".to_string(), config_padding_overlap),
             ];
             info!("{:?}", &desktop_ids);
 
@@ -556,7 +556,7 @@ impl WrapperSpace for PanelSpace {
                 let config_size =
                     ron::ser::to_string(&self.config.get_effective_applet_size(panel_side))
                         .unwrap_or_default();
-                applet_env.push(("COSMIC_PANEL_SIZE".to_string(), config_size));
+                applet_env.push(("WMDE_PANEL_SIZE".to_string(), config_size));
                 if requests_wayland_display
                     && let Some(security_context_manager) = security_context_manager.as_ref()
                 {
@@ -713,7 +713,7 @@ impl WrapperSpace for PanelSpace {
                                     .update_process_env(
                                         &key,
                                         vec![(
-                                            "COSMIC_NOTIFICATIONS".to_string(),
+                                            "WMDE_NOTIFICATIONS".to_string(),
                                             fd.as_raw_fd().to_string(),
                                         )],
                                     )
