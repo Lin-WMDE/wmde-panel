@@ -60,7 +60,7 @@ impl Program for OverflowPopup {
                         border: cosmic::iced::Border {
                             radius: radius_m.into(),
                             width: border_width,
-                            color: cosmic.background.divider.into(),
+                            color: cosmic.background(false).divider.into(),
                         },
                         shadow: Shadow::default(),
                         icon_color: Some(cosmic.background.on.into()),

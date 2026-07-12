@@ -73,7 +73,7 @@ impl Program for Background {
                         border: cosmic::iced::Border {
                             radius: radius_arr.into(),
                             width: 0.,
-                            color: cosmic.background.divider.into(),
+                            color: cosmic.background(false).divider.into(),
                         },
                         shadow: Shadow::default(),
                         snap: true,
