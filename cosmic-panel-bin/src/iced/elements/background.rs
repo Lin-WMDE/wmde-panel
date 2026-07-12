@@ -68,7 +68,7 @@ impl Program for Background {
                     let cosmic = theme.cosmic();
 
                     cosmic::widget::container::Style {
-                        text_color: Some(cosmic.background.on.into()),
+                        text_color: Some(cosmic.background(false).on.into()),
                         background: Some(Color::from(color).into()),
                         border: cosmic::iced::Border {
                             radius: radius_arr.into(),
@@ -77,7 +77,7 @@ impl Program for Background {
                         },
                         shadow: Shadow::default(),
                         snap: true,
-                        icon_color: Some(cosmic.background.on.into()),
+                        icon_color: Some(cosmic.background(false).on.into()),
                     }
                 })),
         )
