@@ -7,7 +7,7 @@
 # NO conflicts/replaces/provides of any cosmic-* package.
 pkgname=wmde-panel
 pkgver=1.0.0
-pkgrel=3
+pkgrel=4
 pkgdesc="WMDE panel and dock (fork of cosmic-panel) - owns the fun.wmde.Panel config"
 arch=('x86_64')
 url="https://wmde.fun"

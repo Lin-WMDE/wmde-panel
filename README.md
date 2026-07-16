@@ -22,6 +22,6 @@ After making changes to copies of the provided config in data `data/`, you may i
 wmde-panel
 
 ### Installing Plugins and Applets
-The default layout loads the WMDE applets (fun.wmde.Applet*, fun.wmde.PanelLauncherButton,
-fun.wmde.AppList). They are built and packaged from the sibling wmde-applets fork:
+The default layout loads the WMDE applets (fun.wmde.Applet*, fun.wmde.AppList) plus the
+start-menu applet (fun.wmde.start-menu). The applets are built and packaged from the sibling wmde-applets fork:
 https://github.com/Lin-WMDE/wmde-applets

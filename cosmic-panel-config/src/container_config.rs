@@ -183,7 +183,7 @@ impl Default for CosmicPanelContainerConfig {
                     background: CosmicPanelBackground::ThemeDefault,
                     plugins_wings: None,
                     plugins_center: Some(vec![
-                        "fun.wmde.PanelLauncherButton".to_string(),
+                        "fun.wmde.start-menu".to_string(),
                         "fun.wmde.AppList".to_string(),
                         "fun.wmde.AppletMinimize".to_string(),
                     ]),
