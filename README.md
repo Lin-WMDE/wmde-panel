@@ -22,5 +22,6 @@ After making changes to copies of the provided config in data `data/`, you may i
 wmde-panel
 
 ### Installing Plugins and Applets
-See the following for examples of applets and plugins which can be installed and used:
-https://github.com/pop-os/cosmic-applets
+The default layout loads the WMDE applets (fun.wmde.Applet*, fun.wmde.PanelLauncherButton,
+fun.wmde.AppList). They are built and packaged from the sibling wmde-applets fork:
+https://github.com/Lin-WMDE/wmde-applets

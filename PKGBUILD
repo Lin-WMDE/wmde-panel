@@ -16,6 +16,9 @@ license=('GPL-3.0-only')
 # Verify with namcap after first build.
 depends=('glibc' 'gcc-libs' 'wayland' 'libglvnd' 'libxkbcommon')
 makedepends=('rust' 'cargo' 'just' 'git' 'wayland' 'clang' 'lld' 'pkgconf' 'libxkbcommon')
+# NOTE: Cargo.toml uses path deps to sibling checkouts (../libcosmic,
+# ../wmde-notifications). The build harness arranges them next to $srcdir; a
+# standalone makepkg run without that layout fails dependency resolution.
 source=("$pkgname::git+https://github.com/Lin-WMDE/wmde-panel.git#branch=wmde")
 sha256sums=('SKIP')
 
