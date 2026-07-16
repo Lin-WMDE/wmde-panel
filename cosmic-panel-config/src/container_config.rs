@@ -143,10 +143,7 @@ impl Default for CosmicPanelContainerConfig {
                     output: CosmicPanelOuput::All,
                     background: CosmicPanelBackground::ThemeDefault,
                     plugins_wings: Some((
-                        vec![
-                            "fun.wmde.PanelWorkspacesButton".to_string(),
-                            "fun.wmde.PanelAppButton".to_string(),
-                        ],
+                        vec![],
                         vec![
                             "fun.wmde.AppletInputSources".to_string(),
                             "fun.wmde.AppletA11y".to_string(),
@@ -187,8 +184,6 @@ impl Default for CosmicPanelContainerConfig {
                     plugins_wings: None,
                     plugins_center: Some(vec![
                         "fun.wmde.PanelLauncherButton".to_string(),
-                        "fun.wmde.PanelWorkspacesButton".to_string(),
-                        "fun.wmde.PanelAppButton".to_string(),
                         "fun.wmde.AppList".to_string(),
                         "fun.wmde.AppletMinimize".to_string(),
                     ]),

@@ -13,10 +13,7 @@
                 "fun.wmde.AppletTime",
             ]),
             plugins_wings: Some((
-                [
-                    "fun.wmde.PanelWorkspacesButton",
-                    "fun.wmde.PanelAppButton",
-                ],
+                [],
                 [
                     "fun.wmde.AppletInputSources",
                     "fun.wmde.AppletStatusArea",
@@ -50,8 +47,6 @@
             background: ThemeDefault,
             plugins_center: Some([
                 "fun.wmde.PanelLauncherButton",
-                "fun.wmde.PanelWorkspacesButton",
-                "fun.wmde.PanelAppButton",
                 "fun.wmde.AppList",
                 "fun.wmde.AppletMinimize",
             ]),
