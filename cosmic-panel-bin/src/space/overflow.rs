@@ -1,10 +1,11 @@
 use anyhow::bail;
 use cctk::sctk::shell::xdg::{XdgPositioner, popup};
-use cctk::wayland_client::QueueHandle;
 use cctk::wayland_client::protocol::wl_seat::WlSeat;
+use cctk::wayland_client::{Proxy, QueueHandle};
 use cosmic::iced::id;
 
 use cosmic_panel_config::PanelAnchor;
+use sctk::compositor::Region;
 use sctk::shell::WaylandSurface;
 use smithay::backend::renderer::damage::OutputDamageTracker;
 use smithay::backend::renderer::gles::GlesRenderer;
@@ -62,7 +63,7 @@ impl PanelSpace {
         let positioner = XdgPositioner::new(xdg_shell_state).unwrap();
         let popup_bbox = popup_element.geometry();
 
-        positioner.set_anchor_rect(loc.x, loc.y, bbox.size.w, bbox.size.h);
+        positioner.set_anchor_rect(loc.x, loc.y, bbox.size.w.max(1), bbox.size.h.max(1));
         let pixel_offset = 8;
         let (offset, anchor, gravity) = match self.config.anchor {
             PanelAnchor::Left => ((pixel_offset, 0), Anchor::Right, Gravity::Right),
@@ -81,7 +82,7 @@ impl PanelSpace {
         positioner.set_offset(offset.0, offset.1);
         positioner.set_reactive();
 
-        positioner.set_size(popup_bbox.size.w, popup_bbox.size.h);
+        positioner.set_size(popup_bbox.size.w.max(1), popup_bbox.size.h.max(1));
         let c_popup = popup::Popup::from_surface(
             None,
             &positioner,
@@ -113,6 +114,36 @@ impl PanelSpace {
 
         // must be done after role is assigned as popup
         c_wl_surface.commit();
+        let blur_surface = if let Some(blur_manager) = self.blur_manager.as_ref()
+            && self.colors.theme.cosmic().frosted_applets
+        {
+            let b = blur_manager.get_background_effect(c_popup.wl_surface(), &self.qh, ());
+            let region = Region::new(compositor_state).unwrap();
+            region.add(0, 0, popup_bbox.size.w, popup_bbox.size.h);
+            b.set_blur_region(Some(region.wl_region()));
+            Some(b)
+        } else {
+            None
+        };
+
+        let cosmic = self.colors.theme.cosmic();
+        let radius_m = cosmic.corner_radii.radius_m;
+
+        let corner_radius = if let Some(corner_radius) = self.corner_radius_manager.as_ref()
+            && self.colors.theme.cosmic().frosted_applets
+            && corner_radius.version() >= 2
+        {
+            let c = corner_radius.get_corner_radius_surface(c_popup.xdg_surface(), &self.qh, ());
+            c.set_radius(
+                radius_m[0] as u32,
+                radius_m[1] as u32,
+                radius_m[2] as u32,
+                radius_m[3] as u32,
+            );
+            Some(c)
+        } else {
+            None
+        };
 
         self.overflow_popup = Some((
             PanelPopup {
@@ -135,6 +166,8 @@ impl PanelSpace {
                 input_region: None,
                 parent: self.layer.as_ref().unwrap().wl_surface().clone(),
                 grab: true,
+                blur_surface,
+                corner_radius,
             },
             section,
         ));

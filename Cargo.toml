@@ -22,7 +22,8 @@ sctk = { package = "smithay-client-toolkit", version = "0.20.0", features = [
 ] }
 
 [patch."https://github.com/pop-os/cosmic-protocols"]
-cctk = { package = "cosmic-client-toolkit", git = "https://github.com/pop-os//cosmic-protocols" }
+cctk = { package = "cosmic-client-toolkit", git = "https://github.com/pop-os//cosmic-protocols", rev = "32283d7" }
+cosmic-protocols = { git = "https://github.com/pop-os//cosmic-protocols", rev = "32283d7" }
 
 # Build libcosmic/cosmic-config/cosmic-theme/iced from the local WMDE forks so this
 # component links against the renamed fun.wmde.* config/theme ids, not upstream System76.
