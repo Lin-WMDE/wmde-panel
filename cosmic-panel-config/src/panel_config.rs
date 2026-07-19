@@ -147,7 +147,7 @@ impl PanelSize {
             match self {
                 PanelSize::XS => 16,
                 PanelSize::S => 20,
-                PanelSize::M => 20,
+                PanelSize::M => 28,
                 PanelSize::L => 32,
                 PanelSize::XL => 48,
                 PanelSize::Custom(s) => {
@@ -175,7 +175,7 @@ impl PanelSize {
             match self {
                 PanelSize::XS => 8,
                 PanelSize::S => 10,
-                PanelSize::M => 8,
+                PanelSize::M => 14,
                 PanelSize::L => 16,
                 PanelSize::XL => 16,
                 PanelSize::Custom(s) => {
