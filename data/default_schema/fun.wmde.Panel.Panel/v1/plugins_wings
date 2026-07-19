@@ -1,1 +1,1 @@
-Some(([],["fun.wmde.AppletInputSources","fun.wmde.AppletA11y", "fun.wmde.AppletStatusArea", "fun.wmde.AppletTiling", "fun.wmde.AppletAudio", "fun.wmde.AppletBluetooth", "fun.wmde.AppletNetwork", "fun.wmde.AppletBattery", "fun.wmde.AppletNotifications", "fun.wmde.AppletPower"]))
+Some((["fun.wmde.start-menu","fun.wmde.AppList"],["fun.wmde.AppletStatusArea","fun.wmde.AppletInputSources","fun.wmde.AppletAudio","fun.wmde.AppletNetwork","fun.wmde.AppletBluetooth","fun.wmde.AppletBattery","fun.wmde.AppletTime","fun.wmde.AppletNotifications","fun.wmde.AppletMinimize"]))
