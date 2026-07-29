@@ -43,6 +43,8 @@ use tracing::{error, info};
 use wayland_protocols::ext::background_effect::v1::client::ext_background_effect_manager_v1::ExtBackgroundEffectManagerV1;
 use wayland_server::Resource;
 
+use super::space_for_client_mut;
+
 pub struct SpaceContainer {
     pub(crate) connection: Option<Connection>,
     pub(crate) config: CosmicPanelContainerConfig,
@@ -213,6 +215,7 @@ impl SpaceContainer {
             });
             if found_window || len != s.popups.len() {
                 s.is_dirty = true;
+                s.needs_layout = true;
                 break;
             }
         }
@@ -370,6 +373,7 @@ impl SpaceContainer {
                 entry.output = space.config.output.clone();
                 space.update_config(entry.clone(), bg_color, true);
             }
+            self.apply_current_maximized_state();
             self.apply_toplevel_changes();
             return;
         }
@@ -514,6 +518,7 @@ impl SpaceContainer {
                 }
             }
         }
+        self.apply_current_maximized_state();
         self.apply_toplevel_changes();
     }
 
@@ -571,6 +576,7 @@ impl SpaceContainer {
         for space in &mut self.space_list {
             if space.space.id() == panel_id {
                 space.is_dirty = true;
+                space.needs_layout = true;
                 break;
             }
         }
@@ -600,16 +606,7 @@ impl SpaceContainer {
         // add window to the space with a client that matches the window
         let s_client = wlsurface.client().map(|c| c.id());
 
-        if let Some(space) = self.space_list.iter_mut().find(|space| {
-            space
-                .clients_center
-                .lock()
-                .unwrap()
-                .iter()
-                .chain(space.clients_left.lock().unwrap().iter())
-                .chain(space.clients_right.lock().unwrap().iter())
-                .any(|c| c.client.as_ref().map(|c| c.id()) == s_client)
-        }) {
+        if let Some(space) = space_for_client_mut(&mut self.space_list, s_client.as_ref()) {
             space.dirty_subsurface(
                 self.renderer.as_mut(),
                 compositor_state,
