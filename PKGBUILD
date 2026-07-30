@@ -43,8 +43,8 @@ build() {
 
 package() {
   cd "$srcdir/$pkgname"
-  # installs /usr/bin/wmde-panel and the default schemas to
-  # /usr/share/wmde/fun.wmde.Panel{,.Panel,.Dock}/v1/ (config-root flipped to wmde per H.1)
+  # installs /usr/bin/wmde-panel only. The panel's geometry defaults are part of the
+  # theme and ship in wmde-themes.
   just rootdir="$pkgdir" prefix=/usr install
   install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
 }
