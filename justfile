@@ -7,7 +7,8 @@ base-dir := absolute_path(clean(rootdir / prefix))
 
 export INSTALL_DIR := base-dir / 'share'
 
-default-schema-target := INSTALL_DIR / 'wmde'
+# The panel's own geometry defaults are not shipped from here: they are part of the
+# theme and live in the wmde-themes package.
 
 cargo-target-dir := env('CARGO_TARGET_DIR', 'target')
 bin-src := cargo-target-dir / 'release' / name
@@ -44,13 +45,12 @@ check-json: (check '--message-format=json')
 # Installs files
 install:
     install -Dm0755 {{bin-src}} {{bin-dst}}
-    find 'data'/'default_schema' -type f -exec echo {} \; | rev | cut -d'/' -f-3 | rev | xargs -d '\n' -I {} install -Dm0644 'data'/'default_schema'/{} {{default-schema-target}}/{}
 
 # Uninstalls installed files
 uninstall:
     rm {{bin-dst}}
-    rm -rf {{default-schema-target}}/{{APPID}}*
-    
+
+
 # Vendor dependencies locally
 vendor:
     mkdir -p .cargo
