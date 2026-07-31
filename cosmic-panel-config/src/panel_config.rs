@@ -404,6 +404,46 @@ impl From<CosmicPanelOuput> for WrapperOutput {
     }
 }
 
+/// WMDE: how a panel presents itself.
+///
+/// Applets style themselves by this rather than by the panel's name: a name is an identity,
+/// and with any number of panels it stops being a reliable description of what the panel
+/// looks like.
+#[derive(Debug, Default, Deserialize, Serialize, Copy, Clone, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub enum PanelLook {
+    /// Resolve from the name, for configs written before this key existed.
+    #[default]
+    Auto,
+    /// A bar along the whole edge of the output.
+    Bar,
+    /// A shorter rounded bar detached from the edge.
+    Island,
+}
+
+impl Display for PanelLook {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PanelLook::Auto => write!(f, "Auto"),
+            PanelLook::Bar => write!(f, "Bar"),
+            PanelLook::Island => write!(f, "Island"),
+        }
+    }
+}
+
+impl FromStr for PanelLook {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Auto" => Ok(Self::Auto),
+            "Bar" => Ok(Self::Bar),
+            "Island" => Ok(Self::Island),
+            _ => bail!("Failed to parse look."),
+        }
+    }
+}
+
 #[cfg(feature = "wayland-rs")]
 // TODO refactor to have separate dock mode config & panel mode config
 /// Config structure for the cosmic panel
@@ -462,6 +502,10 @@ pub struct CosmicPanelConfig {
     /// keep panel styling when windows are maximized
     #[serde(default)]
     pub keep_style_on_maximize: bool,
+    /// WMDE: how the panel presents itself, for applets to style themselves by.
+    /// Absent in configs written before the key existed, hence the default.
+    #[serde(default)]
+    pub look: PanelLook,
 }
 
 impl PartialEq for CosmicPanelConfig {
@@ -489,6 +533,7 @@ impl PartialEq for CosmicPanelConfig {
             && self.size_wings == other.size_wings
             && (self.opacity - other.opacity).abs() < 0.01
             && self.keep_style_on_maximize == other.keep_style_on_maximize
+            && self.look == other.look
     }
 }
 
@@ -520,6 +565,7 @@ impl Default for CosmicPanelConfig {
             autohover_delay_ms: Some(500),
             padding_overlap: 0.5,
             keep_style_on_maximize: false,
+            look: PanelLook::default(),
         }
     }
 }
@@ -573,6 +619,23 @@ impl CosmicPanelConfig {
         self.size.get_applet_padding(is_symbolic)
     }
 
+    /// WMDE: the look to present, with [`PanelLook::Auto`] resolved.
+    ///
+    /// A config written before the key existed has no look, and the name is all there is to
+    /// go on: `Dock` was the one entry that drew as an island.
+    pub fn effective_look(&self) -> PanelLook {
+        match self.look {
+            PanelLook::Auto => {
+                if self.name.eq_ignore_ascii_case("dock") {
+                    PanelLook::Island
+                } else {
+                    PanelLook::Bar
+                }
+            },
+            look => look,
+        }
+    }
+
     /// get the priority of the panel
     /// higher priority panels will be created first and given more space when
     /// competing for space
@@ -587,7 +650,7 @@ impl CosmicPanelConfig {
         if !self.anchor_gap {
             priority += 100;
         }
-        if self.name.to_lowercase().contains("panel") {
+        if self.effective_look() == PanelLook::Bar {
             priority += 10;
         }
         priority
@@ -605,7 +668,7 @@ impl CosmicPanelConfig {
         if !self.anchor_gap {
             priority += 100;
         }
-        if self.name.to_lowercase().contains("panel") {
+        if self.effective_look() == PanelLook::Bar {
             priority += 10;
         }
         priority

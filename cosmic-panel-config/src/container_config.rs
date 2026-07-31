@@ -1,4 +1,4 @@
-use crate::{CosmicPanelBackground, CosmicPanelConfig, CosmicPanelOuput};
+use crate::{CosmicPanelBackground, CosmicPanelConfig, CosmicPanelOuput, PanelLook};
 use cosmic_config::cosmic_config_derive::CosmicConfigEntry;
 use cosmic_config::{Config, ConfigGet, ConfigSet, CosmicConfigEntry};
 use serde::{Deserialize, Serialize};
@@ -172,6 +172,7 @@ impl Default for CosmicPanelContainerConfig {
                     autohover_delay_ms: Some(500),
                     padding_overlap: 0.5,
                     keep_style_on_maximize: false,
+                    look: PanelLook::Bar,
                 },
                 CosmicPanelConfig {
                     name: "Dock".to_string(),
@@ -203,6 +204,7 @@ impl Default for CosmicPanelContainerConfig {
                     autohover_delay_ms: Some(500),
                     padding_overlap: 0.5,
                     keep_style_on_maximize: false,
+                    look: PanelLook::Island,
                 },
             ],
         }

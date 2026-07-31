@@ -445,8 +445,12 @@ impl WrapperSpace for PanelSpace {
             let config_padding_overlap =
                 ron::ser::to_string(&self.config.padding_overlap()).unwrap_or_default();
             let config_name = self.config.name.clone();
+            // The name identifies the panel; the look says what it draws as. Applets style
+            // themselves by the look, so that a panel named anything at all still looks right.
+            let config_look = self.config.effective_look().to_string();
             let env_vars = vec![
                 ("WMDE_PANEL_NAME".to_string(), config_name),
+                ("WMDE_PANEL_LOOK".to_string(), config_look),
                 ("WMDE_PANEL_OUTPUT".to_string(), active_output.clone()),
                 ("WMDE_PANEL_SPACING".to_string(), config_spacing),
                 ("WMDE_PANEL_ANCHOR".to_string(), config_anchor),
