@@ -431,6 +431,29 @@ impl PanelSpace {
             self.actual_size.w = actual_size_constrained.w;
         }
 
+        // Along the bar, the size is the sum of the applet widths - which is zero when there
+        // are none. `render` refuses to draw anything under 20 in either direction, so an
+        // empty panel would own a surface, spawn nothing on it and never attach a buffer:
+        // present to the compositor, invisible to the user. Give it the length it will have
+        // in use - the whole edge when it expands to the edges, one applet slot otherwise.
+        if num_lists == 0 {
+            let empty_length = if self.config.expand_to_edges() {
+                if self.config.is_horizontal() {
+                    actual_size_constrained.w
+                } else {
+                    actual_size_constrained.h
+                }
+            } else {
+                self.config.size.get_applet_icon_size_with_padding(true) as i32
+            };
+
+            if self.config.is_horizontal() {
+                self.actual_size.w = empty_length;
+            } else {
+                self.actual_size.h = empty_length;
+            }
+        }
+
         let (new_logical_length, new_logical_crosswise_dim) = if self.config.is_horizontal() {
             (self.actual_size.w, self.actual_size.h)
         } else {
