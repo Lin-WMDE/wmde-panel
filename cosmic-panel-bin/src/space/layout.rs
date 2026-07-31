@@ -410,7 +410,7 @@ impl PanelSpace {
         let applet_thickness = chain!(left.clone(), center.clone(), right.clone())
             .map(|(_, _, _, thickness, ..)| thickness)
             .max()
-            .unwrap_or_else(|| self.config.size.get_applet_icon_size_with_padding(true) as i32);
+            .unwrap_or_else(|| self.config.size.thickness() as i32);
 
         let new_list_thickness =
             (2.0 * padding_scaled + applet_thickness as f64 * self.scale) as i32;
@@ -444,7 +444,7 @@ impl PanelSpace {
                     actual_size_constrained.h
                 }
             } else {
-                self.config.size.get_applet_icon_size_with_padding(true) as i32
+                self.config.size.thickness() as i32
             };
 
             if self.config.is_horizontal() {

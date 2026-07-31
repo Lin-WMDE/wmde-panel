@@ -122,6 +122,10 @@ impl From<PanelAnchor> for Anchor {
     }
 }
 
+/// WMDE: the thinnest a panel may be set to, in pixels. A bar below this has no room for
+/// an applet and no way back through the interface.
+pub const MIN_PANEL_THICKNESS: u32 = 16;
+
 /// Configurable size for the cosmic panel
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -151,7 +155,7 @@ impl PanelSize {
                 PanelSize::L => 32,
                 PanelSize::XL => 48,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     s / 2
                 },
             }
@@ -163,7 +167,7 @@ impl PanelSize {
                 PanelSize::L => 48,
                 PanelSize::XL => 56,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     s * 7 / 10
                 },
             }
@@ -179,7 +183,7 @@ impl PanelSize {
                 PanelSize::L => 16,
                 PanelSize::XL => 16,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     (s / 4) as u16
                 },
             }
@@ -191,7 +195,7 @@ impl PanelSize {
                 PanelSize::L => 8,
                 PanelSize::XL => 12,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     (s * 3 / 20) as u16
                 },
             }
@@ -207,7 +211,7 @@ impl PanelSize {
                 PanelSize::L => 20,
                 PanelSize::XL => 20,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     4 + (s / 4) as u16
                 },
             }
@@ -219,7 +223,7 @@ impl PanelSize {
                 PanelSize::L => 12,
                 PanelSize::XL => 16,
                 PanelSize::Custom(s) => {
-                    let s = (*s).max(16) / 4 * 4;
+                    let s = (*s).max(MIN_PANEL_THICKNESS);
                     4 + (s * 3 / 20) as u16
                 },
             }
@@ -228,6 +232,18 @@ impl PanelSize {
 
     pub fn get_applet_icon_size_with_padding(&self, is_symbolic: bool) -> u32 {
         self.get_applet_icon_size(is_symbolic) + self.get_applet_padding(is_symbolic) as u32 * 2
+    }
+
+    /// WMDE: how thick the bar is, in pixels - its height when horizontal, its width when
+    /// vertical.
+    ///
+    /// A named size states it through the applet it fits; [`PanelSize::Custom`] states it
+    /// outright, which is what the settings write when the user types a height.
+    pub fn thickness(&self) -> u32 {
+        match self {
+            PanelSize::Custom(s) => (*s).max(MIN_PANEL_THICKNESS),
+            named => named.get_applet_icon_size_with_padding(true),
+        }
     }
 }
 
@@ -775,9 +791,12 @@ impl CosmicPanelConfig {
             PanelSize::M => 8 + gap..101 + gap,
             PanelSize::L => 8 + gap..121 + gap,
             PanelSize::XL => 8 + gap..141 + gap,
-            PanelSize::Custom(s) => {
-                let s = (*s).max(16) / 4 * 4;
-                8 + gap..s * 2 + 1 + gap
+            // A custom size is a height the user typed, so it is pinned rather than offered
+            // as a range: `constrain_dim` clamps into this, and the bar comes out exactly
+            // that many pixels whatever sits on it.
+            PanelSize::Custom(_) => {
+                let thickness = self.size.thickness();
+                thickness + gap..thickness + 1 + gap
             },
         };
         assert!(2 * self.padding + gap < bar_thickness.end);
