@@ -402,12 +402,18 @@ impl PanelSpace {
             + spacing_scaled * num_lists.saturating_sub(1) as f64)
             as i32;
 
-        let new_list_thickness = (2.0 * padding_scaled
-            + chain!(left.clone(), center.clone(), right.clone())
-                .map(|(_, _, _, thickness, ..)| thickness)
-                .max()
-                .unwrap_or(0) as f64
-                * self.scale) as i32;
+        // A panel with no applets has nothing to measure. Taking zero for its thickness
+        // collapses the bar to the smallest size the config allows, which reads as "the
+        // panel was never created" - and a panel is created empty. Fall back to the
+        // thickness one symbolic applet would give, so an empty bar is exactly as thick as
+        // it becomes the moment the first applet lands on it.
+        let applet_thickness = chain!(left.clone(), center.clone(), right.clone())
+            .map(|(_, _, _, thickness, ..)| thickness)
+            .max()
+            .unwrap_or_else(|| self.config.size.get_applet_icon_size_with_padding(true) as i32);
+
+        let new_list_thickness =
+            (2.0 * padding_scaled + applet_thickness as f64 * self.scale) as i32;
 
         self.actual_size = Size::<i32, Physical>::from(if self.config.is_horizontal() {
             (new_list_length, new_list_thickness)
