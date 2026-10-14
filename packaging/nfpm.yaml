@@ -1,0 +1,68 @@
+# Один конфиг nFPM на оба формата. Стейджинг готовит `just package-staging`,
+# версию всегда подставляет just через env WMDE_VERSION (см. justfile).
+# ВАЖНО: только ${WMDE_VERSION} без :-дефолта — nFPM раскрывает env через
+# os.ExpandEnv и :- не понимает (версия молча станет 0.0.0~rc0).
+name: wmde-panel
+arch: amd64
+version: ${WMDE_VERSION}
+release: 1
+maintainer: WMDE <wmde@wmde.fun>
+description: |-
+  WMDE panel and dock (fork of cosmic-panel)
+  Owns the fun.wmde.Panel config namespace, co-installs beside cosmic-panel.
+homepage: https://wmde.fun
+license: GPL-3.0-only
+section: x11
+
+# Как в PKGBUILD: wayland/GL через smithay, xkbcommon напрямую, а fontconfig/
+# freetype/expat подгружает libcosmic через dlopen в рантайме (в ldd не видно).
+depends:
+  - libc6 | glibc
+  - libgcc-s1 | libgcc
+  - libxkbcommon0
+  - libwayland-client0
+  - libgl1
+  - libfontconfig1
+  - libfreetype6
+
+contents:
+  - src: target/staging/usr/bin/wmde-panel
+    dst: /usr/bin/wmde-panel
+    file_info: { mode: 0755 }
+  # doc (copyright + changelog.Debian.gz) готовит just package-doc.
+  # Только для deb: в rpm нет %doc-разметки у nFPM,
+  # а лицензия и changelog там и так есть (License-тег + %changelog).
+  - src: target/staging/usr/share/doc/wmde-panel/
+    dst: /usr/share/doc/wmde-panel/
+    type: tree
+    packager: deb
+
+# %changelog для rpm генерит just package-staging (иначе E: no-changelogname-tag).
+# Путь от корня репо: nFPM резолвит его от cwd, а не от каталога конфига.
+changelog: target/changelog.yaml
+
+overrides:
+  deb:
+    depends:
+      - libc6
+      - libgcc-s1
+      - libxkbcommon0
+      - libwayland-client0
+      - libgl1
+      - libegl1
+      - libfontconfig1
+      - libfreetype6
+      - libexpat1
+  rpm:
+    # SONAME вместо имён пакетов: имена расходятся между
+    # Fedora и openSUSE, а SONAME предоставляют обе семьи.
+    depends:
+      - libc.so.6()(64bit)
+      - libgcc_s.so.1()(64bit)
+      - libxkbcommon.so.0()(64bit)
+      - libwayland-client.so.0()(64bit)
+      - libGL.so.1()(64bit)
+      - libEGL.so.1()(64bit)
+      - libfontconfig.so.1()(64bit)
+      - libfreetype.so.6()(64bit)
+      - libexpat.so.1()(64bit)
