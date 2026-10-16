@@ -275,6 +275,21 @@ impl PanelSpace {
             num_lists += 1;
         }
 
+        // WMDE: an applet of zero length along the bar - one that hides itself (no Bluetooth
+        // adapter, no battery) or an empty status area - takes no room: no length, no
+        // spacing, no padding overlap. Otherwise each one pulled its neighbours closer by the
+        // overlap. Returns the summed length and the number of applets that have one.
+        fn visible_len(
+            items: impl Iterator<Item = (Alignment, usize, i32, i32, i32, i32)>,
+        ) -> (i32, usize) {
+            items.filter(|(_, _, length, ..)| *length > 0).fold(
+                (0, 0),
+                |(sum, count), (_, _, _, _, suggested_length, padding)| {
+                    (sum + suggested_length - padding, count + 1)
+                },
+            )
+        }
+
         fn map_fn(
             (i, w, _, padding_shrinkable): &(
                 usize,
@@ -343,12 +358,9 @@ impl PanelSpace {
 
         let left = windows_left.iter().map(|e| map_fn(e, anchor, Alignment::Left, applet_padding));
 
-        let left_sum_scaled = left
-            .clone()
-            .map(|(_, _, _, _, suggested_length, padding)| suggested_length - padding)
-            .sum::<i32>() as f64
-            * self.scale
-            + spacing_scaled * windows_left.len().saturating_sub(1) as f64;
+        let (left_len, left_count) = visible_len(left.clone());
+        let left_sum_scaled =
+            left_len as f64 * self.scale + spacing_scaled * left_count.saturating_sub(1) as f64;
         let mut left_sum_scaled = if let Some(left_button) = left_overflow_button.as_ref() {
             let size = left_button.geometry().size.to_f64() * self.scale;
             left_sum_scaled
@@ -361,12 +373,9 @@ impl PanelSpace {
 
         let center =
             windows_center.iter().map(|e| map_fn(e, anchor, Alignment::Center, applet_padding));
-        let center_sum_scaled = center
-            .clone()
-            .map(|(_, _, _, _, suggested_length, padding)| suggested_length - padding)
-            .sum::<i32>() as f64
-            * self.scale
-            + spacing_scaled * windows_center.len().saturating_sub(1) as f64;
+        let (center_len, center_count) = visible_len(center.clone());
+        let center_sum_scaled =
+            center_len as f64 * self.scale + spacing_scaled * center_count.saturating_sub(1) as f64;
 
         let mut center_sum_scaled = if let Some(center_button) = center_overflow_button.as_ref() {
             let size = center_button.geometry().size.to_f64() * self.scale;
@@ -380,12 +389,9 @@ impl PanelSpace {
 
         let right =
             windows_right.iter().map(|e| map_fn(e, anchor, Alignment::Right, applet_padding));
-        let right_sum_scaled = right
-            .clone()
-            .map(|(_, _, _length, _, suggested_length, padding)| suggested_length - padding)
-            .sum::<i32>() as f64
-            * self.scale
-            + spacing_scaled * windows_right.len().saturating_sub(1) as f64;
+        let (right_len, right_count) = visible_len(right.clone());
+        let right_sum_scaled =
+            right_len as f64 * self.scale + spacing_scaled * right_count.saturating_sub(1) as f64;
 
         let mut right_sum_scaled = if let Some(right_button) = right_overflow_button.as_ref() {
             let size = right_button.geometry().size.to_f64() * self.scale;
@@ -708,6 +714,17 @@ impl PanelSpace {
                 }
                 if configured_size.h != 0 {
                     size.h = size.h.min(configured_size.h as f64);
+                }
+                // WMDE: see visible_len - mapped in place, the next applet does not move.
+                let length = if self.config.is_horizontal() { size.w } else { size.h };
+                if length <= 0.0 {
+                    let loc = if self.config.is_horizontal() {
+                        (prev as i32, margin_offset)
+                    } else {
+                        (margin_offset, prev as i32)
+                    };
+                    self.space.map_element(w.clone(), loc, false);
+                    continue;
                 }
                 let cur: f64 = prev;
                 let (x, y);
