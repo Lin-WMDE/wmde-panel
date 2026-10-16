@@ -275,14 +275,15 @@ impl PanelSpace {
             num_lists += 1;
         }
 
-        // WMDE: an applet of zero length along the bar - one that hides itself (no Bluetooth
-        // adapter, no battery) or an empty status area - takes no room: no length, no
-        // spacing, no padding overlap. Otherwise each one pulled its neighbours closer by the
-        // overlap. Returns the summed length and the number of applets that have one.
+        // WMDE: an empty applet - one that hides itself (no Bluetooth adapter, no battery) or
+        // an empty status area - takes no room: no length, no spacing, no padding overlap.
+        // Otherwise each one pulled its neighbours closer by the overlap. Empty means 1x1 or
+        // less: libcosmic's autosize never asks for a window below 1x1, and no applet that
+        // draws anything is that small. Returns the summed length and the number of applets.
         fn visible_len(
             items: impl Iterator<Item = (Alignment, usize, i32, i32, i32, i32)>,
         ) -> (i32, usize) {
-            items.filter(|(_, _, length, ..)| *length > 0).fold(
+            items.filter(|(_, _, length, cross, ..)| *length > 1 || *cross > 1).fold(
                 (0, 0),
                 |(sum, count), (_, _, _, _, suggested_length, padding)| {
                     (sum + suggested_length - padding, count + 1)
@@ -715,9 +716,9 @@ impl PanelSpace {
                 if configured_size.h != 0 {
                     size.h = size.h.min(configured_size.h as f64);
                 }
-                // WMDE: see visible_len - mapped in place, the next applet does not move.
-                let length = if self.config.is_horizontal() { size.w } else { size.h };
-                if length <= 0.0 {
+                // WMDE: see visible_len - an empty applet is mapped in place, the next one
+                // does not move.
+                if size.w <= 1.0 && size.h <= 1.0 {
                     let loc = if self.config.is_horizontal() {
                         (prev as i32, margin_offset)
                     } else {
