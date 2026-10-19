@@ -138,6 +138,13 @@ pub fn run(
 
         event_loop.dispatch(dispatch_timeout, &mut global_state)?;
 
+        // WMDE: after a protocol error the dead connection does not always fail `dispatch`:
+        // the loop then spins at full CPU and the panel stays gone. Leave, so wmde-session
+        // starts a fresh panel.
+        if let Some(error) = global_state.client_state.connection.protocol_error() {
+            anyhow::bail!("wayland protocol error: {error}");
+        }
+
         // rendering
         {
             let space = &mut global_state.space;
